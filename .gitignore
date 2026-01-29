@@ -12,6 +12,11 @@
 dist/
 bin/
 
+# Others
+tmp/
+*.bru
+bruno.json
+
 # Go coverage
 coverage.out
 *.coverprofile

@@ -4,6 +4,7 @@ import (
 	"go-todo-api/internal/models"
 	"go-todo-api/internal/repository"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -44,7 +45,7 @@ func CreateUserHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 		createdUser, err := repository.CreateUser(pool, user)
 
 		if err != nil {
-			if err.Error() != "" {
+			if strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "unique") {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Email already registered"})
 				return
 			}

@@ -21,16 +21,19 @@ func CreateUserHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 		if err := c.BindJSON(&registerRequest); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
 		}
 
 		if len(registerRequest.Password) < 6 {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Password must be at least 6 characters long"})
+			return
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerRequest.Password), bcrypt.DefaultCost)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password " + err.Error()})
+			return
 		}
 
 		user := &models.User{

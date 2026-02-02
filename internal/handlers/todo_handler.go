@@ -71,6 +71,15 @@ func GetAllTodosHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 
 func GetTodoByIdHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userIDInterface, exists := c.Get("user_id")
+
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "user_id noy found in context"})
+			return
+		}
+
+		userID := userIDInterface.(string)
+
 		idStr := c.Param("id")
 
 		id, err := strconv.Atoi(idStr)
@@ -80,7 +89,7 @@ func GetTodoByIdHandler(pool *pgxpool.Pool) gin.HandlerFunc {
 			return
 		}
 
-		todo, err := repository.GetTodoById(pool, id)
+		todo, err := repository.GetTodoById(pool, id, userID)
 
 		if err != nil {
 			if err == pgx.ErrNoRows {
